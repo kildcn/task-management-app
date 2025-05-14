@@ -1,0 +1,115 @@
+# Laravel specific
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+
+# IDE and Editor files
+/.idea
+/.vscode
+*.swp
+*.swo
+*~
+.sublime-workspace
+.sublime-project
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Compiled assets (can be regenerated)
+/public/build
+/public/mix-manifest.json
+/public/js/app.js
+/public/css/app.css
+
+# Log files
+*.log
+storage/logs/*.log
+
+# Cache and temporary files
+/bootstrap/cache/*.php
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+/storage/app/public/*
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+
+# Testing
+.phpunit.cache
+coverage/
+/coverage.xml
+/.phpunit.xml
+/phpunit.xml
+
+# Docker (if using)
+docker-compose.override.yml
+
+# Deployment
+.env.dusk.local
+.env.testing
+
+# Package managers
+composer.phar
+package-lock.json
+yarn.lock
+
+# Sail (Laravel's Docker environment)
+/docker
+
+# Composer vendor-bin
+/tools/*/vendor
+
+# Pest/PHPUnit
+/.phpunit.result.cache
+.pest
+
+# SQLite databases (if using SQLite for testing)
+*.sqlite
+*.sqlite3
+
+# MacOS specific
+.fseventsd
+.TemporaryItems
+.VolumeIcon.icns
+
+# Windows specific
+desktop.ini
+$RECYCLE.BIN/
+
+# Phar files
+*.phar
+
+# Ignore uploaded files but keep the directory structure
+/storage/app/public/*
+!/storage/app/public/.gitkeep
+
+# Keep important empty directories
+!/bootstrap/cache/.gitkeep
+!/storage/app/.gitkeep
+!/storage/framework/.gitkeep
+!/storage/framework/cache/.gitkeep
+!/storage/framework/sessions/.gitkeep
+!/storage/framework/testing/.gitkeep
+!/storage/framework/views/.gitkeep
+!/storage/logs/.gitkeep
