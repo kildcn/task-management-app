@@ -72,20 +72,48 @@
         @apply bg-green-100 text-green-800 border border-green-200;
     }
 
+    /* Fixed Calendar Styles - Proper Grid */
+    .calendar-container {
+        @apply bg-white/80 backdrop-blur-lg rounded-xl shadow-lg border border-white/30;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+        padding: 16px;
+        width: 100%;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
     .calendar-day {
-        @apply bg-white/50 backdrop-blur-sm rounded-lg p-3 h-24 cursor-pointer border border-white/30 hover:border-indigo-300 hover:shadow-lg hover:scale-105 transition-all duration-200;
+        @apply bg-white/60 backdrop-blur-sm rounded-lg cursor-pointer border border-white/40 hover:border-indigo-300 hover:shadow-lg transition-all duration-200;
+        height: 80px;
+        width: 100%;
+        max-width: 90px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding: 8px;
+        justify-self: center;
+        aspect-ratio: 1;
     }
 
     .calendar-day.today {
-        @apply border-indigo-400 bg-indigo-50/50 shadow-lg;
+        @apply border-indigo-400 bg-indigo-50/70 shadow-lg;
     }
 
     .calendar-day.has-tasks {
-        @apply border-purple-200 bg-purple-50/30;
+        @apply border-purple-300 bg-purple-50/50;
     }
 
     .task-indicator {
-        @apply h-1 rounded-full mb-1;
+        @apply h-1 rounded-full transition-all duration-200;
+        width: 100%;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .priority-line {
@@ -115,6 +143,16 @@
     .status-indicator.overdue {
         @apply bg-red-100 text-red-800;
     }
+
+    /* Form group spacing */
+    .form-group {
+        @apply space-y-4;
+    }
+
+    /* Category badges */
+    .category-badge {
+        @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm;
+    }
 }
 
 /* Custom animations */
@@ -132,6 +170,7 @@
     }
 }
 
+/* Keyframe animations */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -154,6 +193,17 @@
     }
 }
 
+@keyframes calendarFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 /* Priority colors */
 .priority-urgent {
     @apply bg-gradient-to-r from-red-500 to-pink-500;
@@ -171,14 +221,68 @@
     @apply bg-gradient-to-r from-green-500 to-blue-500;
 }
 
+/* Enhanced calendar hover effects */
+.calendar-day:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-day:hover .task-indicator {
+    @apply scale-105;
+}
+
+/* Today indicator enhancement */
+.calendar-day.today::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #4f46e5, #7c3aed);
+    border-radius: 12px;
+    z-index: -1;
+    opacity: 0.1;
+}
+
+/* Focus states for accessibility */
+.calendar-day:focus {
+    @apply outline-none ring-2 ring-indigo-500 ring-offset-2;
+}
+
+.calendar-day:focus-visible {
+    @apply outline-none ring-2 ring-indigo-500 ring-offset-2;
+}
+
+/* Custom scrollbar for calendar container */
+.calendar-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.calendar-container::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+}
+
+.calendar-container::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full hover:bg-gray-400;
+}
+
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
     .nav-link span {
         @apply hidden;
     }
 
+    .calendar-grid {
+        padding: 12px;
+        gap: 4px;
+        max-width: 350px;
+    }
+
     .calendar-day {
-        @apply h-16 p-2;
+        height: 60px;
+        max-width: 45px;
+        padding: 4px;
     }
 
     .task-item {
@@ -188,4 +292,48 @@
     .stats-card {
         @apply hover:scale-100;
     }
+
+    .calendar-container {
+        @apply overflow-x-auto;
+    }
+
+    .calendar-day .task-indicator {
+        height: 1px;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 640px) and (max-width: 1023px) {
+    .calendar-grid {
+        max-width: 500px;
+    }
+
+    .calendar-day {
+        height: 70px;
+        max-width: 65px;
+    }
+}
+
+/* Desktop adjustments */
+@media (min-width: 1024px) {
+    .calendar-grid {
+        max-width: 700px;
+    }
+
+    .calendar-day {
+        height: 80px;
+        max-width: 90px;
+    }
+}
+
+/* Responsive calendar improvements */
+.calendar-container .calendar-grid {
+    min-width: 320px;
+}
+
+/* Smooth transitions for interactive elements */
+.calendar-day,
+.stats-card,
+.task-item {
+    will-change: transform;
 }

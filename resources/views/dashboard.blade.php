@@ -8,8 +8,16 @@
         overflow-x: auto;
     }
 
-    .calendar-grid {
-        min-width: 600px;
+    .calendar-day {
+        min-height: 80px;
+        height: auto;
+        aspect-ratio: 1 / 1;
+    }
+
+    @media (max-width: 768px) {
+        .calendar-day {
+            min-height: 60px;
+        }
     }
 </style>
 @endsection
@@ -105,7 +113,7 @@
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        <!-- Enhanced Calendar -->
+        <!-- Fixed Calendar -->
         <div class="lg:col-span-2">
             <div class="glass-card rounded-xl shadow-sm">
                 <div class="p-6">
@@ -129,17 +137,17 @@
                     </div>
 
                     <!-- Calendar Container -->
-                    <div class="calendar-container">
+                    <div class="calendar-container p-4">
                         <!-- Calendar Grid -->
-                        <div class="calendar-grid grid grid-cols-7 gap-1">
+                        <div class="calendar-grid">
                             <!-- Day headers -->
-                            <div class="text-center text-xs font-semibold text-gray-500 py-3">Sun</div>
-                            <div class="text-center text-xs font-semibold text-gray-500 py-3">Mon</div>
-                            <div class="text-center text-xs font-semibold text-gray-500 py-3">Tue</div>
-                            <div class="text-center text-xs font-semibold text-gray-500 py-3">Wed</div>
-                            <div class="text-center text-xs font-semibold text-gray-500 py-3">Thu</div>
-                            <div class="text-center text-xs font-semibold text-gray-500 py-3">Fri</div>
-                            <div class="text-center text-xs font-semibold text-gray-500 py-3">Sat</div>
+                            <div class="text-center text-xs font-semibold text-gray-500 py-2">Sun</div>
+                            <div class="text-center text-xs font-semibold text-gray-500 py-2">Mon</div>
+                            <div class="text-center text-xs font-semibold text-gray-500 py-2">Tue</div>
+                            <div class="text-center text-xs font-semibold text-gray-500 py-2">Wed</div>
+                            <div class="text-center text-xs font-semibold text-gray-500 py-2">Thu</div>
+                            <div class="text-center text-xs font-semibold text-gray-500 py-2">Fri</div>
+                            <div class="text-center text-xs font-semibold text-gray-500 py-2">Sat</div>
 
                             @php
                                 $currentMonth = now();
@@ -164,42 +172,41 @@
                                     $dailyTasks = $tasksByDate->get($dateString, collect());
                                 @endphp
 
-                                <div class="calendar-day bg-white rounded-lg p-2 h-20 cursor-pointer border-2
-                                    @if($isToday) border-indigo-300 bg-indigo-50
-                                    @else border-gray-100 hover:border-indigo-200
-                                    @endif">
-                                    <div class="text-sm font-medium
-                                        @if($isToday) text-indigo-600
-                                        @elseif($isCurrentMonth) text-gray-900
-                                        @else text-gray-400
-                                        @endif">
+                                <div class="calendar-day {{
+                                    $isToday ? 'today' :
+                                    ($dailyTasks->count() > 0 ? 'has-tasks' : '')
+                                }}">
+                                    <div class="text-xs font-semibold {{
+                                        $isToday ? 'text-indigo-600' :
+                                        ($isCurrentMonth ? 'text-gray-900' : 'text-gray-400')
+                                    }}">
                                         {{ $date->format('j') }}
                                     </div>
 
                                     @if($dailyTasks->count() > 0)
-                                        @foreach($dailyTasks->take(3) as $task)
-                                            <div class="task-indicator rounded mt-1"
-                                                style="background-color:
-                                                @if($task->priority === 'urgent') #dc2626
-                                                @elseif($task->priority === 'high') #ea580c
-                                                @elseif($task->priority === 'medium') #ca8a04
-                                                @else #16a34a
-                                                @endif"></div>
-                                        @endforeach
-                                        @if($dailyTasks->count() > 3)
-                                            <div class="text-xs text-gray-500 mt-1">+{{ $dailyTasks->count() - 3 }} more</div>
-                                        @endif
+                                        <div class="mt-1 space-y-1 flex-1">
+                                            @foreach($dailyTasks->take(3) as $task)
+                                                <div class="h-1 rounded-full task-indicator" style="background-color: {{
+                                                    $task->priority === 'urgent' ? '#dc2626' :
+                                                    ($task->priority === 'high' ? '#ea580c' :
+                                                    ($task->priority === 'medium' ? '#ca8a04' : '#16a34a'))
+                                                }}"></div>
+                                            @endforeach
+                                            @if($dailyTasks->count() > 3)
+                                                <div class="text-xs text-gray-500 font-medium">+{{ $dailyTasks->count() - 3 }}</div>
+                                            @endif
+                                        </div>
                                     @endif
 
                                     @if($isToday)
-                                        <div class="text-xs text-indigo-600 font-medium mt-1">Today</div>
+                                        <div class="text-xs text-indigo-600 font-medium mt-auto">Today</div>
                                     @endif
                                 </div>
                             @endfor
                         </div>
 
                         <!-- Priority Legend -->
-                        <div class="mt-6 flex flex-wrap gap-4">
+                        <div class="mt-6 flex flex-wrap gap-4 justify-center">
                             <div class="flex items-center">
                                 <div class="w-3 h-3 bg-red-500 rounded mr-2"></div>
                                 <span class="text-xs text-gray-600">Urgent</span>
