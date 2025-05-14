@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
 class Task extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'household_id',
@@ -40,7 +41,10 @@ class Task extends Model
         'recurrence_data' => 'array',
         'attachments' => 'array',
         'urgency_score' => 'decimal:2',
+        'deleted_at' => 'datetime',
     ];
+
+    protected $dates = ['deleted_at'];
 
     protected static function booted()
     {
