@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\TaskStat;
 use App\Models\TaskActivityLog;
+use App\Models\Category;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -30,7 +31,7 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Get overdue tasks
+        // Get overdue tasks for the household
         $overdueTasks = Task::where('household_id', $household->id)
             ->where('due_date', '<', now())
             ->where('completed_at', null)

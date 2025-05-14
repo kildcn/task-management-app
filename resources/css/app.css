@@ -1,3 +1,104 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom glass card effect */
+.glass-card {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Calendar day hover effects */
+.calendar-day {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.calendar-day:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Task indicator bars */
+.task-indicator {
+    height: 3px;
+    margin-bottom: 2px;
+    border-radius: 2px;
+}
+
+/* Gradient backgrounds */
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Stats card hover effects */
+.stats-card {
+    transition: all 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Priority indicator line */
+.priority-line {
+    width: 4px;
+    height: 48px;
+    border-radius: 2px;
+    margin-right: 12px;
+}
+
+/* Enhanced buttons */
+.btn-primary {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    border: none;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #4338ca 0%, #7c3aed 100%);
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.6);
+    transform: translateY(-1px);
+}
+
+/* Navigation gradient */
+.nav-gradient {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Task list item hover effect */
+.task-item {
+    transition: all 0.2s ease;
+    border-left: 4px solid transparent;
+}
+
+.task-item:hover {
+    background: rgba(99, 102, 241, 0.05);
+    border-left: 4px solid #6366f1;
+    transform: translateX(4px);
+}
+
+/* Progress bars with gradients */
+.progress-bar {
+    background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+/* Completion rate indicators */
+.completion-excellent { background: linear-gradient(90deg, #059669 0%, #10b981 100%); }
+.completion-good { background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%); }
+.completion-needs-work { background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%); }
