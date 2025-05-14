@@ -44,13 +44,41 @@ class TaskStat extends Model
     {
         $user = $this->user;
 
-        $this->tasks_created_count = $user->createdTasks()->count();
-        $this->tasks_completed_count = $user->completedTasks()->count();
-        $this->tasks_assigned_count = $user->assignedTasks()->count();
+        // Count tasks created by this user
+        $this->tasks_created_count = Task::where('creator_id', $user->id)
+            ->where('household_id', $this->household_id)
+            ->count();
 
+        // Count tasks completed by this user
+        $this->tasks_completed_count = Task::where('completed_by_id', $user->id)
+            ->where('household_id', $this->household_id)
+            ->whereNotNull('completed_at')
+            ->count();
+
+        // Count tasks assigned to this user
+        $this->tasks_assigned_count = Task::where('assignee_id', $user->id)
+            ->where('household_id', $this->household_id)
+            ->count();
+
+        // Calculate completion rate based on assigned tasks
         if ($this->tasks_assigned_count > 0) {
-            $this->completion_rate = ($this->tasks_completed_count / $this->tasks_assigned_count) * 100;
+            $assignedAndCompleted = Task::where('assignee_id', $user->id)
+                ->where('household_id', $this->household_id)
+                ->whereNotNull('completed_at')
+                ->count();
+            $this->completion_rate = ($assignedAndCompleted / $this->tasks_assigned_count) * 100;
+        } else {
+            $this->completion_rate = 0;
         }
+
+        // Update last completed timestamp
+        $lastCompleted = Task::where('completed_by_id', $user->id)
+            ->where('household_id', $this->household_id)
+            ->whereNotNull('completed_at')
+            ->orderBy('completed_at', 'desc')
+            ->first();
+
+        $this->last_completed_at = $lastCompleted ? $lastCompleted->completed_at : null;
 
         $this->calculateStreak();
         $this->calculatePoints();
@@ -60,36 +88,73 @@ class TaskStat extends Model
     private function calculateStreak()
     {
         $user = $this->user;
-        $completedTasks = $user->completedTasks()
+        $completedTasks = Task::where('completed_by_id', $user->id)
+            ->where('household_id', $this->household_id)
+            ->whereNotNull('completed_at')
             ->orderBy('completed_at', 'desc')
             ->get(['completed_at']);
 
         $streak = 0;
-        $lastDate = null;
+        $currentDate = Carbon::now()->startOfDay();
+        $consecutiveDays = collect();
 
         foreach ($completedTasks as $task) {
-            $date = $task->completed_at->format('Y-m-d');
+            $completedDate = $task->completed_at->startOfDay();
+            $consecutiveDays->push($completedDate->format('Y-m-d'));
+        }
 
-            if ($lastDate === null) {
-                $lastDate = $date;
-                $streak = 1;
-            } elseif ($lastDate === Carbon::parse($date)->addDay()->format('Y-m-d')) {
-                $streak++;
-                $lastDate = $date;
+        // Remove duplicates and sort
+        $uniqueDays = $consecutiveDays->unique()->sort()->reverse()->values();
+
+        // Calculate current streak
+        foreach ($uniqueDays as $index => $day) {
+            $dayCarbon = Carbon::parse($day);
+
+            if ($index === 0) {
+                // First day - check if it's today or yesterday
+                if ($dayCarbon->isSameDay($currentDate) || $dayCarbon->isSameDay($currentDate->subDay())) {
+                    $streak = 1;
+                    $checkDate = $dayCarbon;
+                } else {
+                    // No recent activity
+                    break;
+                }
             } else {
-                break;
+                // Check if this day is exactly one day before the previous day
+                $expectedDate = $checkDate->copy()->subDay();
+                if ($dayCarbon->isSameDay($expectedDate)) {
+                    $streak++;
+                    $checkDate = $dayCarbon;
+                } else {
+                    // Streak broken
+                    break;
+                }
             }
         }
 
         $this->current_streak_days = $streak;
+
+        // Calculate longest streak (simplified - you might want to make this more sophisticated)
         $this->longest_streak_days = max($this->longest_streak_days, $streak);
     }
 
     private function calculatePoints()
     {
-        // Simple point system: 10 points per completed task, bonus for streaks
-        $basePoints = $this->tasks_completed_count * 10;
+        // Enhanced point system
+        $basePoints = 0;
+
+        // Points for completing tasks (10 points each)
+        $basePoints += $this->tasks_completed_count * 10;
+
+        // Points for creating tasks (5 points each)
+        $basePoints += $this->tasks_created_count * 5;
+
+        // Streak bonus (5 points per day in current streak)
         $streakBonus = $this->current_streak_days * 5;
-        $this->points = $basePoints + $streakBonus;
+
+        // Completion rate bonus (up to 20 points for 100% completion)
+        $completionBonus = ($this->completion_rate / 100) * 20;
+
+        $this->points = round($basePoints + $streakBonus + $completionBonus);
     }
 }

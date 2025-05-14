@@ -28,7 +28,12 @@ class TaskController extends Controller
             ->orderBy('due_date', 'asc')
             ->paginate(15);
 
-        return view('tasks.index', compact('tasks'));
+        // Get categories and household members for filters
+        $categories = Category::where('household_id', $household->id)
+            ->orderBy('sort_order')
+            ->get();
+
+        return view('tasks.index', compact('tasks', 'categories', 'household'));
     }
 
     /**
@@ -90,6 +95,13 @@ class TaskController extends Controller
             'action' => 'created',
             'description' => "Created task: {$task->title}",
         ]);
+
+        // Update creator's stats
+        $creatorStats = TaskStat::firstOrCreate([
+            'user_id' => $user->id,
+            'household_id' => $user->household_id,
+        ]);
+        $creatorStats->updateStats();
 
         return redirect()->route('tasks.index')
             ->with('success', 'Task created successfully!');
@@ -202,8 +214,11 @@ class TaskController extends Controller
             'completed_by_id' => Auth::id(),
         ]);
 
-        // Update user stats
+        // Update user stats for both assignee and completor
         $this->updateUserStats($task->assignee);
+        if ($task->assignee_id !== Auth::id()) {
+            $this->updateUserStats(Auth::user());
+        }
 
         TaskActivityLog::create([
             'task_id' => $task->id,
@@ -227,6 +242,11 @@ class TaskController extends Controller
             'completed_by_id' => null,
             'completion_notes' => null,
         ]);
+
+        // Update user stats
+        if ($task->assignee) {
+            $this->updateUserStats($task->assignee);
+        }
 
         TaskActivityLog::create([
             'task_id' => $task->id,

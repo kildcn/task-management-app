@@ -22,7 +22,7 @@ class DashboardController extends Controller
 
         $household = $user->household;
 
-        // Get user's tasks
+        // Get user's current tasks
         $myTasks = Task::where('assignee_id', $user->id)
             ->where('completed_at', null)
             ->with(['category', 'creator'])
@@ -39,6 +39,11 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        // Get all household tasks for calendar and priority distribution
+        $allTasks = Task::where('household_id', $household->id)
+            ->with(['category', 'assignee'])
+            ->get();
+
         // Get recent activity
         $recentActivity = TaskActivityLog::whereHas('task', function($query) use ($household) {
                 $query->where('household_id', $household->id);
@@ -48,10 +53,20 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        // Get household stats
+        // Get household stats and update them
         $householdStats = TaskStat::where('household_id', $household->id)
             ->with('user')
-            ->orderBy('points', 'desc')
+            ->get();
+
+        // Update stats for all household members
+        foreach ($householdStats as $stat) {
+            $stat->updateStats();
+        }
+
+        // Re-fetch to get updated stats
+        $householdStats = TaskStat::where('household_id', $household->id)
+            ->with('user')
+            ->orderBy('tasks_created_count', 'desc')
             ->get();
 
         // Calculate completion rate for this week
@@ -67,6 +82,7 @@ class DashboardController extends Controller
         return view('dashboard', compact(
             'myTasks',
             'overdueTasks',
+            'allTasks',
             'recentActivity',
             'householdStats',
             'weeklyCompletionRate'

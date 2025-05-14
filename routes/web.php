@@ -6,6 +6,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HouseholdController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StatsController;
 
 // Home route
 Route::get('/', function () {
@@ -39,6 +40,9 @@ Route::middleware(['auth', 'household.member'])->group(function () {
     Route::resource('household', HouseholdController::class)->only(['show', 'edit', 'update']);
     Route::get('household/members', [HouseholdController::class, 'members'])->name('household.members');
     Route::get('household/invite', [HouseholdController::class, 'invite'])->name('household.invite');
+
+    // Stats
+    Route::get('stats', [StatsController::class, 'index'])->name('stats.index');
 
     // Profile
     Route::resource('profile', ProfileController::class)->only(['show', 'edit', 'update']);
