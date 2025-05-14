@@ -9,68 +9,98 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Custom CSS for enhanced design -->
+    <style>
+        /* Custom CSS for better visual design */
+        .glass-card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .calendar-day {
+            transition: all 0.2s ease;
+        }
+
+        .calendar-day:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .task-indicator {
+            height: 3px;
+            margin-bottom: 2px;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        body {
+            background: linear-gradient(to bottom right, rgb(249, 250, 251), rgb(243, 244, 246));
+            min-height: 100vh;
+        }
+    </style>
+
+    <!-- Additional head content from individual pages -->
+    @yield('head')
 </head>
-<body class="bg-gray-100">
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
     <div class="min-h-screen">
-        <!-- Navigation -->
-        <nav class="bg-white shadow">
+        <!-- Enhanced Navigation -->
+        <nav class="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200/50">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
-                    <div class="flex">
-                        <!-- Logo -->
-                        <div class="flex-shrink-0 flex items-center">
-                            <a href="{{ route('dashboard') }}" class="text-xl font-bold text-gray-800">
-                                Task Manager
-                            </a>
-                        </div>
-
-                        <!-- Navigation Links -->
-                        @auth
-                        <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                            <a href="{{ route('dashboard') }}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm
-                                {{ request()->routeIs('dashboard') ? 'border-indigo-500 text-gray-900' : '' }}">
-                                Dashboard
-                            </a>
-                            <a href="{{ route('tasks.index') }}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm
-                                {{ request()->routeIs('tasks.*') ? 'border-indigo-500 text-gray-900' : '' }}">
-                                Tasks
-                            </a>
-                            <a href="{{ route('categories.index') }}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm
-                                {{ request()->routeIs('categories.*') ? 'border-indigo-500 text-gray-900' : '' }}">
-                                Categories
-                            </a>
-                            <a href="{{ route('stats.index') }}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm
-                                {{ request()->routeIs('stats.*') ? 'border-indigo-500 text-gray-900' : '' }}">
-                                Statistics
-                            </a>
-                            <a href="{{ route('household.show') }}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm
-                                {{ request()->routeIs('household.*') ? 'border-indigo-500 text-gray-900' : '' }}">
-                                Household
-                            </a>
-                        </div>
-                        @endauth
+                    <div class="flex items-center">
+                        <!-- Enhanced Logo -->
+                        <a href="{{ route('dashboard') }}" class="text-2xl font-bold gradient-text">
+                            Task Manager
+                        </a>
                     </div>
 
-                    <!-- Right side menu -->
+                    <!-- Navigation Links -->
                     @auth
-                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
-                        <div class="ml-3 relative">
-                            <div class="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" id="user-menu-button">
-                                <span class="sr-only">Open user menu</span>
-                                <div class="text-gray-700">{{ Auth::user()->name }}</div>
-                            </div>
+                    <div class="flex items-center space-x-8">
+                        <a href="{{ route('dashboard') }}" class="text-gray-700 hover:text-indigo-600 font-medium transition-colors
+                            {{ request()->routeIs('dashboard') ? 'text-indigo-600' : '' }}">
+                            Dashboard
+                        </a>
+                        <a href="{{ route('tasks.index') }}" class="text-gray-700 hover:text-indigo-600 font-medium transition-colors
+                            {{ request()->routeIs('tasks.*') ? 'text-indigo-600' : '' }}">
+                            Tasks
+                        </a>
+                        <a href="{{ route('categories.index') }}" class="text-gray-700 hover:text-indigo-600 font-medium transition-colors
+                            {{ request()->routeIs('categories.*') ? 'text-indigo-600' : '' }}">
+                            Categories
+                        </a>
+                        <a href="{{ route('stats.index') }}" class="text-gray-700 hover:text-indigo-600 font-medium transition-colors
+                            {{ request()->routeIs('stats.*') ? 'text-indigo-600' : '' }}">
+                            Statistics
+                        </a>
+
+                        <!-- User menu -->
+                        <div class="flex items-center space-x-3">
+                            <span class="text-gray-700 font-medium">{{ Auth::user()->name }}</span>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm">
+                                    Logout
+                                </button>
+                            </form>
                         </div>
-                        <form method="POST" action="{{ route('logout') }}" class="ml-4">
-                            @csrf
-                            <button type="submit" class="text-gray-500 hover:text-gray-700">
-                                Logout
-                            </button>
-                        </form>
                     </div>
                     @else
                     <div class="flex items-center space-x-4">
-                        <a href="{{ route('login') }}" class="text-gray-500 hover:text-gray-700">Login</a>
-                        <a href="{{ route('register') }}" class="text-gray-500 hover:text-gray-700">Register</a>
+                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-indigo-600 font-medium transition-colors">Login</a>
+                        <a href="{{ route('register') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm">Register</a>
                     </div>
                     @endauth
                 </div>
@@ -88,15 +118,30 @@
 
         <!-- Page Content -->
         <main>
+            <!-- Enhanced Alert Messages -->
             @if (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded m-4">
-                {{ session('success') }}
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+                <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg shadow-sm">
+                    <div class="flex">
+                        <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        {{ session('success') }}
+                    </div>
+                </div>
             </div>
             @endif
 
             @if (session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded m-4">
-                {{ session('error') }}
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+                <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-sm">
+                    <div class="flex">
+                        <svg class="w-5 h-5 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L12.732 4c-.77-.833-1.732-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                        {{ session('error') }}
+                    </div>
+                </div>
             </div>
             @endif
 
