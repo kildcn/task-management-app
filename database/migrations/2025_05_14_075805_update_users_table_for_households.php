@@ -9,7 +9,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('household_id')->after('id')->constrained()->onDelete('cascade');
+            // Make household_id nullable so users can be created before joining a household
+            $table->foreignId('household_id')->after('id')->nullable()->constrained()->onDelete('cascade');
             $table->enum('role', ['admin', 'member'])->default('member')->after('password');
             $table->string('avatar_path')->nullable()->after('role');
             $table->boolean('is_active')->default(true)->after('avatar_path');

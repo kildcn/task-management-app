@@ -35,16 +35,21 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Create user without household_id initially (will be null/0)
+        // Note: This requires making household_id nullable temporarily in the migration
+        // or setting a default value
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'household_id' => null, // This will be set later when they create/join a household
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Redirect to household setup instead of dashboard
+        return redirect(route('household.create'));
     }
 }

@@ -15,8 +15,9 @@ class DashboardController extends Controller
         $user = $request->user();
 
         // Handle case where user doesn't have a household yet
-        if (!$user->household_id) {
-            return redirect()->route('household.create');
+        if (!$user->hasHousehold()) {
+            return redirect()->route('household.create')
+                ->with('info', 'Please create or join a household to continue.');
         }
 
         $household = $user->household;

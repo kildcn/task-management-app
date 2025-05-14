@@ -12,16 +12,16 @@ Route::get('/', function () {
     return auth()->check() ? redirect()->route('dashboard') : view('welcome');
 });
 
-// Routes for users without household
-Route::middleware(['auth', 'verified'])->group(function () {
+// Routes for users without household (remove 'verified' middleware)
+Route::middleware(['auth'])->group(function () {
     Route::get('household/create', [HouseholdController::class, 'create'])->name('household.create');
     Route::post('household', [HouseholdController::class, 'store'])->name('household.store');
     Route::get('household/join', [HouseholdController::class, 'joinForm'])->name('household.join');
     Route::post('household/join', [HouseholdController::class, 'join'])->name('household.join.post');
 });
 
-// Protected routes requiring household membership
-Route::middleware(['auth', 'verified', 'household.member'])->group(function () {
+// Protected routes requiring household membership (remove 'verified' middleware)
+Route::middleware(['auth', 'household.member'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
