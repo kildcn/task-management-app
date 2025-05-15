@@ -85,7 +85,7 @@ class TaskController extends Controller
             'due_date' => $validated['due_date'],
             'estimated_duration' => $validated['estimated_duration'],
             'is_recurring' => $validated['is_recurring'] ?? false,
-            'recurrence_pattern' => $validated['recurrence_pattern'],
+            'recurrence_pattern' => $validated['recurrence_pattern'] ?? null,
         ]);
 
         // Log the activity
@@ -166,7 +166,11 @@ class TaskController extends Controller
             }
         }
 
-        $task->update($validated);
+        // Handle the case where recurrence_pattern might not be in the request
+        $updateData = $validated;
+        $updateData['recurrence_pattern'] = $validated['recurrence_pattern'] ?? null;
+
+        $task->update($updateData);
 
         if (!empty($changes)) {
             TaskActivityLog::create([
