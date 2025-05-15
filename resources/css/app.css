@@ -8,16 +8,37 @@
         @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-lg;
     }
 
+    /* Fixed button styles with proper visibility */
     .btn-primary {
-        @apply inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-semibold rounded-lg hover:from-indigo-600 hover:to-purple-700 focus:ring-4 focus:ring-indigo-200 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+        @apply inline-flex items-center px-6 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+        background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(to right, #4338CA, #6D28D9) !important;
+        color: white !important;
+    }
+
+    .btn-primary:focus {
+        @apply focus:ring-4 focus:ring-indigo-200;
+        background: linear-gradient(to right, #4338CA, #6D28D9) !important;
+        color: white !important;
+    }
+
+    .btn-primary svg {
+        color: white !important;
     }
 
     .btn-secondary {
         @apply inline-flex items-center px-6 py-2.5 bg-white text-gray-700 text-sm font-semibold rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 focus:ring-4 focus:ring-gray-200 transition-all duration-200 shadow hover:shadow-lg;
+        color: #374151 !important;
     }
 
     .btn-ghost {
         @apply inline-flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-50/50 transition-all duration-200;
+        color: #4B5563 !important;
     }
 
     .nav-link {
@@ -336,4 +357,113 @@
 .stats-card,
 .task-item {
     will-change: transform;
+}
+
+/* CRITICAL BUTTON FIXES - Applied with highest priority */
+/* These styles ensure all primary buttons are always visible */
+.btn-primary,
+button[type="submit"],
+a[class*="btn-primary"],
+.create-button,
+.action-button {
+    background-color: #4F46E5 !important;
+    background-image: linear-gradient(to right, #4F46E5, #7C3AED) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.btn-primary:hover,
+button[type="submit"]:hover,
+a[class*="btn-primary"]:hover {
+    background-color: #4338CA !important;
+    background-image: linear-gradient(to right, #4338CA, #6D28D9) !important;
+    color: white !important;
+}
+
+.btn-primary:focus,
+button[type="submit"]:focus {
+    background-color: #4338CA !important;
+    background-image: linear-gradient(to right, #4338CA, #6D28D9) !important;
+    color: white !important;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3) !important;
+}
+
+.btn-primary:active,
+button[type="submit"]:active {
+    background-color: #3730A3 !important;
+    background-image: linear-gradient(to right, #3730A3, #5B21B6) !important;
+    color: white !important;
+}
+
+/* Ensure SVG icons in buttons are white */
+.btn-primary svg,
+button[type="submit"] svg,
+a[class*="btn-primary"] svg {
+    color: white !important;
+    stroke: white !important;
+}
+
+/* Fix buttons in specific contexts */
+.glass-card .btn-primary,
+.bg-white .btn-primary,
+form .btn-primary,
+nav .btn-primary {
+    background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
+    color: white !important;
+}
+
+/* Navigation specific button fixes */
+nav a[href*="register"],
+nav a[href*="create"],
+.navbar .btn-primary {
+    background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
+    color: white !important;
+}
+
+/* Form submit buttons */
+form button[type="submit"],
+.form-actions button[type="submit"] {
+    background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* Welcome page specific fixes */
+.welcome .btn-primary,
+#app .btn-primary {
+    background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
+    color: white !important;
+}
+
+/* Auth pages button fixes */
+.auth-page .btn-primary,
+.login-form .btn-primary,
+.register-form .btn-primary {
+    background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
+    color: white !important;
+}
+
+/* Additional safety net for any missed buttons */
+button:contains("Create"),
+button:contains("Submit"),
+button:contains("Save"),
+a:contains("Get Started"),
+a:contains("Register") {
+    background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
+    color: white !important;
+}
+
+/* Line clamp utility for text truncation */
+.line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+/* Ensure long URLs or text don't break layout */
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
