@@ -83,24 +83,70 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Priority -->
                     <div>
-                        <label for="priority" class="block text-sm font-medium text-gray-700">Priority</label>
-                        <select name="priority"
-                                id="priority"
-                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                required>
-                            <option value="low" {{ old('priority', $task->priority) == 'low' ? 'selected' : '' }}>Low</option>
-                            <option value="medium" {{ old('priority', $task->priority) == 'medium' ? 'selected' : '' }}>Medium</option>
-                            <option value="high" {{ old('priority', $task->priority) == 'high' ? 'selected' : '' }}>High</option>
-                            <option value="urgent" {{ old('priority', $task->priority) == 'urgent' ? 'selected' : '' }}>Urgent</option>
-                        </select>
+                        <label for="priority" class="block text-sm font-medium text-gray-700 mb-3">Priority</label>
+                        <div class="space-y-2">
+                            @foreach(['urgent' => ['color' => 'red', 'label' => 'Urgent'],
+                                     'high' => ['color' => 'orange', 'label' => 'High'],
+                                     'medium' => ['color' => 'yellow', 'label' => 'Medium'],
+                                     'low' => ['color' => 'green', 'label' => 'Low']] as $priority => $config)
+                                <label class="flex items-center p-2 border border-gray-200 rounded hover:bg-gray-50 cursor-pointer">
+                                    <input type="radio"
+                                           name="priority"
+                                           value="{{ $priority }}"
+                                           {{ old('priority', $task->priority) == $priority ? 'checked' : '' }}
+                                           class="mr-2 text-{{ $config['color'] }}-500 focus:ring-{{ $config['color'] }}-500">
+                                    <div class="w-3 h-3 bg-{{ $config['color'] }}-500 rounded-full mr-2"></div>
+                                    <span class="text-sm font-medium text-gray-900">{{ $config['label'] }}</span>
+                                </label>
+                            @endforeach
+                        </div>
                         @error('priority')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
+                    <!-- Difficulty -->
+                    <div>
+                        <label for="difficulty" class="block text-sm font-medium text-gray-700 mb-3">
+                            Difficulty
+                            <span class="text-xs text-gray-500 block">Affects completion points (30 × difficulty)</span>
+                        </label>
+                        <div class="space-y-2">
+                            @foreach([1 => ['label' => 'Very Easy', 'points' => 30],
+                                     2 => ['label' => 'Easy', 'points' => 60],
+                                     3 => ['label' => 'Medium', 'points' => 90],
+                                     4 => ['label' => 'Hard', 'points' => 120],
+                                     5 => ['label' => 'Very Hard', 'points' => 150]] as $level => $config)
+                                <label class="flex items-center justify-between p-2 border border-gray-200 rounded hover:bg-gray-50 cursor-pointer">
+                                    <div class="flex items-center">
+                                        <input type="radio"
+                                               name="difficulty"
+                                               value="{{ $level }}"
+                                               {{ old('difficulty', $task->difficulty) == $level ? 'checked' : '' }}
+                                               class="mr-2 text-indigo-600 focus:ring-indigo-500">
+                                        <div class="flex items-center">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <svg class="w-3 h-3 {{ $i <= $level ? 'text-indigo-500' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                                                </svg>
+                                            @endfor
+                                            <span class="ml-2 text-sm font-medium text-gray-900">{{ $config['label'] }}</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-semibold text-indigo-600">{{ $config['points'] }} pts</span>
+                                </label>
+                            @endforeach
+                        </div>
+                        @error('difficulty')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Due Date -->
                     <div>
                         <label for="due_date" class="block text-sm font-medium text-gray-700">Due Date (Optional)</label>
@@ -162,6 +208,22 @@
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
+
+                <!-- Points Summary -->
+                <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                    <h3 class="text-sm font-semibold text-indigo-900 mb-2">Points Summary</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-indigo-700">Creating this task:</span>
+                            <span class="font-bold text-indigo-900">100 points</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-indigo-700">Completing this task:</span>
+                            <span class="font-bold text-indigo-900" id="completion-points">{{ $task->completion_points }} points</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-indigo-600 mt-1">Completion points = 30 × difficulty level</p>
+                </div>
             </div>
 
             <!-- Actions -->
@@ -198,6 +260,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const isRecurringCheckbox = document.getElementById('is_recurring');
     const recurrenceSection = document.getElementById('recurrence_section');
+    const difficultyRadios = document.querySelectorAll('input[name="difficulty"]');
+    const completionPointsSpan = document.getElementById('completion-points');
 
     function toggleRecurrenceSection() {
         if (isRecurringCheckbox.checked) {
@@ -207,8 +271,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function updateCompletionPoints() {
+        const selectedDifficulty = document.querySelector('input[name="difficulty"]:checked');
+        if (selectedDifficulty) {
+            const points = parseInt(selectedDifficulty.value) * 30;
+            completionPointsSpan.textContent = points + ' points';
+        }
+    }
+
     // Listen for changes
     isRecurringCheckbox.addEventListener('change', toggleRecurrenceSection);
+
+    difficultyRadios.forEach(radio => {
+        radio.addEventListener('change', updateCompletionPoints);
+    });
 });
 </script>
 @endsection

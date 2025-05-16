@@ -29,6 +29,7 @@ class Task extends Model
         'completed_by_id',
         'urgency_score',
         'priority',
+        'difficulty',
         'estimated_duration',
         'attachments',
         'completion_notes',
@@ -42,6 +43,7 @@ class Task extends Model
         'attachments' => 'array',
         'urgency_score' => 'decimal:2',
         'deleted_at' => 'datetime',
+        'difficulty' => 'integer',
     ];
 
     protected $dates = ['deleted_at'];
@@ -130,6 +132,37 @@ class Task extends Model
         };
 
         return round($timeScore * $priorityMultiplier, 2);
+    }
+
+    /**
+     * Get the difficulty label
+     */
+    public function getDifficultyLabelAttribute(): string
+    {
+        return match($this->difficulty) {
+            1 => 'Very Easy',
+            2 => 'Easy',
+            3 => 'Medium',
+            4 => 'Hard',
+            5 => 'Very Hard',
+            default => 'Medium',
+        };
+    }
+
+    /**
+     * Calculate points for completing this task
+     */
+    public function getCompletionPointsAttribute(): int
+    {
+        return 30 * $this->difficulty;
+    }
+
+    /**
+     * Calculate points for creating this task
+     */
+    public function getCreationPointsAttribute(): int
+    {
+        return 100;
     }
 
     protected function durationInHours(): Attribute

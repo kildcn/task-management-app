@@ -140,14 +140,27 @@ class TaskStat extends Model
 
     private function calculatePoints()
     {
-        // Enhanced point system
-        $basePoints = 0;
+        $user = $this->user;
+        $totalPoints = 0;
 
-        // Points for completing tasks (10 points each)
-        $basePoints += $this->tasks_completed_count * 10;
+        // Points for creating tasks (100 points each)
+        $createdTasks = Task::where('creator_id', $user->id)
+            ->where('household_id', $this->household_id)
+            ->get();
 
-        // Points for creating tasks (5 points each)
-        $basePoints += $this->tasks_created_count * 5;
+        foreach ($createdTasks as $task) {
+            $totalPoints += $task->creation_points;
+        }
+
+        // Points for completing tasks (30 points × difficulty)
+        $completedTasks = Task::where('completed_by_id', $user->id)
+            ->where('household_id', $this->household_id)
+            ->whereNotNull('completed_at')
+            ->get();
+
+        foreach ($completedTasks as $task) {
+            $totalPoints += $task->completion_points;
+        }
 
         // Streak bonus (5 points per day in current streak)
         $streakBonus = $this->current_streak_days * 5;
@@ -155,6 +168,6 @@ class TaskStat extends Model
         // Completion rate bonus (up to 20 points for 100% completion)
         $completionBonus = ($this->completion_rate / 100) * 20;
 
-        $this->points = round($basePoints + $streakBonus + $completionBonus);
+        $this->points = round($totalPoints + $streakBonus + $completionBonus);
     }
 }

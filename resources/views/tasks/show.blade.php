@@ -18,6 +18,12 @@
                     @endif">
                     {{ ucfirst($task->priority) }} Priority
                 </span>
+                <span class="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                    @for($i = 1; $i <= $task->difficulty; $i++)
+                        ⭐
+                    @endfor
+                    {{ $task->difficulty_label }}
+                </span>
                 @if($task->isCompleted())
                     <span class="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                         ✓ Completed
@@ -34,7 +40,7 @@
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
-                            Mark Complete
+                            Mark Complete ({{ $task->completion_points }} pts)
                         </button>
                     </form>
                 @endif
@@ -68,6 +74,19 @@
                     <h4 class="text-sm font-medium text-gray-700">Created by</h4>
                     <p class="mt-1 text-sm text-gray-900">{{ $task->creator->name }}</p>
                 </div>
+                <div>
+                    <h4 class="text-sm font-medium text-gray-700">Priority</h4>
+                    <p class="mt-1 text-sm text-gray-900">{{ ucfirst($task->priority) }}</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-medium text-gray-700">Difficulty</h4>
+                    <p class="mt-1 text-sm text-gray-900">
+                        {{ $task->difficulty_label }}
+                        @for($i = 1; $i <= $task->difficulty; $i++)
+                            ⭐
+                        @endfor
+                    </p>
+                </div>
                 @if($task->due_date)
                     <div>
                         <h4 class="text-sm font-medium text-gray-700">Due Date</h4>
@@ -86,6 +105,45 @@
                     </div>
                 @endif
             </div>
+
+            <!-- Points Information -->
+            <div class="mt-6 bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                <h4 class="text-sm font-medium text-indigo-900 mb-2">Points Information</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-indigo-700">Creating this task:</span>
+                        <span class="font-bold text-indigo-900">{{ $task->creation_points }} points</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-indigo-700">Completing this task:</span>
+                        <span class="font-bold text-indigo-900">{{ $task->completion_points }} points</span>
+                    </div>
+                </div>
+                @if($task->isCompleted())
+                    <p class="text-xs text-green-700 mt-2 font-medium">
+                        ✓ {{ $task->completedBy->name }} earned {{ $task->completion_points }} points for completing this task
+                    </p>
+                @else
+                    <p class="text-xs text-indigo-600 mt-2">Complete this task to earn {{ $task->completion_points }} points!</p>
+                @endif
+            </div>
+
+            @if($task->isCompleted())
+                <div class="mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-green-900 mb-2">Task Completed</h4>
+                    <p class="text-sm text-green-700">
+                        Completed by {{ $task->completedBy->name }} on {{ $task->completed_at->format('M j, Y \a\t g:i A') }}
+                        ({{ $task->completed_at->diffForHumans() }})
+                    </p>
+                </div>
+            @endif
+
+            @if($task->is_recurring)
+                <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-blue-900 mb-2">Recurring Task</h4>
+                    <p class="text-sm text-blue-700">This task repeats {{ $task->recurrence_pattern }}.</p>
+                </div>
+            @endif
         </div>
     </div>
 

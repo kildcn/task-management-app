@@ -68,6 +68,7 @@ class TaskController extends Controller
             'assignee_id' => 'nullable|exists:users,id',
             'category_id' => 'required|exists:categories,id',
             'priority' => 'required|in:low,medium,high,urgent',
+            'difficulty' => 'required|integer|min:1|max:5',
             'due_date' => 'nullable|date',
             'estimated_duration' => 'nullable|integer|min:1',
             'is_recurring' => 'boolean',
@@ -82,6 +83,7 @@ class TaskController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'],
             'priority' => $validated['priority'],
+            'difficulty' => $validated['difficulty'],
             'due_date' => $validated['due_date'],
             'estimated_duration' => $validated['estimated_duration'],
             'is_recurring' => $validated['is_recurring'] ?? false,
@@ -153,6 +155,7 @@ class TaskController extends Controller
             'assignee_id' => 'nullable|exists:users,id',
             'category_id' => 'required|exists:categories,id',
             'priority' => 'required|in:low,medium,high,urgent',
+            'difficulty' => 'required|integer|min:1|max:5',
             'due_date' => 'nullable|date',
             'estimated_duration' => 'nullable|integer|min:1',
             'is_recurring' => 'boolean',
@@ -228,10 +231,10 @@ class TaskController extends Controller
             'task_id' => $task->id,
             'user_id' => Auth::id(),
             'action' => 'completed',
-            'description' => "Completed task: {$task->title}",
+            'description' => "Completed task: {$task->title} (earned {$task->completion_points} points)",
         ]);
 
-        return back()->with('success', 'Task marked as completed!');
+        return back()->with('success', "Task completed! You earned {$task->completion_points} points!");
     }
 
     /**
