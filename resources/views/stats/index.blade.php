@@ -67,6 +67,108 @@
         </div>
     </div>
 
+    <!-- Recent Task Activity Section -->
+    <div class="bg-white rounded-xl border border-gray-200 mb-8">
+        <div class="px-6 py-5 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-900">Recent Task Activity</h2>
+            <p class="text-sm text-gray-600 mt-1">Last 7 days of task creation and completion</p>
+        </div>
+        <div class="p-6">
+            @if(isset($recentTasks) && count($recentTasks) > 0)
+                <div class="space-y-4">
+                    @foreach($recentTasks as $task)
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-2 h-8 rounded-full mr-3 {{
+                                $task['type'] === 'created' ? 'bg-blue-500' : 'bg-green-500'
+                            }}"></div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">{{ $task['title'] }}</h4>
+                                <p class="text-sm text-gray-600">
+                                    {{ $task['user'] }} {{ $task['type'] }}
+                                    in {{ $task['category'] }}
+                                    <span class="text-gray-500">{{ Carbon\Carbon::parse($task['date'])->diffForHumans() }}</span>
+
+                                    @if($task['type'] === 'completed')
+                                        <span class="inline-flex items-center ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                            +{{ $task['points'] }} pts
+                                        </span>
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                {{ $task['priority'] === 'urgent' ? 'bg-red-100 text-red-800' :
+                                ($task['priority'] === 'high' ? 'bg-orange-100 text-orange-800' :
+                                ($task['priority'] === 'medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800')) }}">
+                                {{ ucfirst($task['priority']) }}
+                            </span>
+
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                @for($i = 1; $i <= $task['difficulty']; $i++)⭐@endfor
+                            </span>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-8">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No recent activity</h3>
+                    <p class="mt-1 text-sm text-gray-500">No tasks have been created or completed in the last 7 days.</p>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Monthly Summary Section -->
+    <div class="bg-white rounded-xl border border-gray-200 mb-8">
+        <div class="px-6 py-5 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-900">Monthly Task Summary</h2>
+            <p class="text-sm text-gray-600 mt-1">Task activity over the past 6 months</p>
+        </div>
+        <div class="p-6">
+            @if(isset($monthlyStats) && count($monthlyStats) > 0)
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Completed</th>
+                                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Completion Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($monthlyStats as $month)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $month['month'] }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $month['created'] }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $month['completed'] }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-full bg-gray-200 rounded-full h-2 mr-3 max-w-xs">
+                                                <div class="bg-indigo-600 h-2 rounded-full" style="width: {{ $month['completion_rate'] }}%"></div>
+                                            </div>
+                                            <span class="text-sm text-gray-900">{{ $month['completion_rate'] }}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="text-center py-8">
+                    <p class="text-sm text-gray-500">No monthly data available.</p>
+                </div>
+            @endif
+        </div>
+    </div>
+
     <!-- Member Performance -->
     <div class="bg-white rounded-xl border border-gray-200 mb-8">
         <div class="px-6 py-5 border-b border-gray-200">

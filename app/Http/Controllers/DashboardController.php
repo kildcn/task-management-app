@@ -70,15 +70,46 @@ class DashboardController extends Controller
             ->orderBy('tasks_created_count', 'desc')
             ->get();
 
-        // Calculate completion rate for this week
+        // Calculate weekly progress more comprehensively
         $weekStart = Carbon::now()->startOfWeek();
-        $tasksThisWeek = Task::where('household_id', $household->id)
-            ->where('created_at', '>=', $weekStart)
+
+        // Tasks assigned to user that were already available at start of week or created during this week
+        $availableTasksThisWeek = Task::where('assignee_id', $user->id)
+            ->where(function($query) use ($weekStart) {
+                // Tasks created before this week that weren't completed
+                $query->where(function($q) use ($weekStart) {
+                    $q->where('created_at', '<', $weekStart)
+                      ->where(function($q2) use ($weekStart) {
+                          $q2->whereNull('completed_at')
+                             ->orWhere('completed_at', '>=', $weekStart);
+                      });
+                })
+                // OR tasks created this week
+                ->orWhere('created_at', '>=', $weekStart);
+            })
             ->count();
-        $completedThisWeek = Task::where('household_id', $household->id)
+
+        // Tasks completed by user this week
+        $completedThisWeek = Task::where('completed_by_id', $user->id)
             ->where('completed_at', '>=', $weekStart)
             ->count();
-        $weeklyCompletionRate = $tasksThisWeek > 0 ? round(($completedThisWeek / $tasksThisWeek) * 100) : 0;
+
+        // Weekly progress as a percentage of completed vs available tasks
+        // Capped at 100% to avoid confusion
+        $weeklyProgress = $availableTasksThisWeek > 0 ?
+            min(100, round(($completedThisWeek / $availableTasksThisWeek) * 100)) : 0;
+
+        // Create objects to pass to the view
+        $weeklyData = [
+            'available' => $availableTasksThisWeek,
+            'completed' => $completedThisWeek,
+            'progress' => $weeklyProgress,
+            'week_start' => $weekStart->format('M j'),
+            'week_end' => $weekStart->copy()->endOfWeek()->format('M j'),
+            // Include raw completion percentage for context
+            'raw_percentage' => $availableTasksThisWeek > 0 ?
+                round(($completedThisWeek / $availableTasksThisWeek) * 100) : 0
+        ];
 
         return view('dashboard', compact(
             'myTasks',
@@ -86,7 +117,7 @@ class DashboardController extends Controller
             'allTasks',
             'recentActivity',
             'householdStats',
-            'weeklyCompletionRate'
+            'weeklyData'
         ));
     }
 }

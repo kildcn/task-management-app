@@ -215,25 +215,43 @@
                 </div>
             </div>
 
-            <!-- Weekly Progress -->
+            <!-- Weekly Progress - UPDATED -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Weekly Progress</h3>
-                    @php
-                        $weekStart = now()->startOfWeek();
-                        $tasksThisWeek = Auth::user()->assignedTasks()->where('created_at', '>=', $weekStart)->count();
-                        $completedThisWeek = Auth::user()->completedTasks()->where('completed_at', '>=', $weekStart)->count();
-                        $weeklyProgress = $tasksThisWeek > 0 ? round(($completedThisWeek / $tasksThisWeek) * 100) : 0;
-                    @endphp
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Weekly Progress ({{ $weeklyData['week_start'] }} - {{ $weeklyData['week_end'] }})</h3>
 
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-gray-600">{{ $completedThisWeek }} of {{ $tasksThisWeek }} tasks</span>
-                        <span class="text-sm font-medium text-gray-900">{{ $weeklyProgress }}%</span>
+                        <span class="text-sm text-gray-600">{{ $weeklyData['completed'] }} of {{ $weeklyData['available'] }} tasks</span>
+                        <span class="text-sm font-medium text-gray-900">{{ $weeklyData['progress'] }}%</span>
                     </div>
+
                     <div class="w-full bg-gray-200 rounded-full h-3">
                         <div class="bg-gradient-to-r from-indigo-500 to-purple-600 h-3 rounded-full transition-all duration-500"
-                             style="width: {{ $weeklyProgress }}%"></div>
+                             style="width: {{ $weeklyData['progress'] }}%"></div>
                     </div>
+
+                    @if($weeklyData['completed'] > $weeklyData['available'])
+                        <p class="text-xs text-indigo-600 mt-2 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            You've completed {{ $weeklyData['completed'] - $weeklyData['available'] }} tasks beyond your weekly quota!
+                        </p>
+                    @elseif($weeklyData['completed'] === $weeklyData['available'] && $weeklyData['available'] > 0)
+                        <p class="text-xs text-green-600 mt-2 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            All weekly tasks completed! Great job!
+                        </p>
+                    @elseif($weeklyData['available'] === 0)
+                        <p class="text-xs text-gray-500 mt-2 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L12.732 4c-.77-.833-1.732-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                            No tasks assigned for this week.
+                        </p>
+                    @endif
                 </div>
             </div>
 
@@ -314,8 +332,8 @@
                     </div>
                     <div class="mt-4">
                         <a href="{{ route('household.show', ['household' => Auth::user()->household->id]) }}" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
-    View household →
-</a>
+                            View household →
+                        </a>
                     </div>
                 </div>
             </div>
