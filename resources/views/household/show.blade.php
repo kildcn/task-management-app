@@ -18,6 +18,40 @@
         </div>
     </div>
 
+    <!-- Household Join Key Section -->
+    @if(Auth::user()->role === 'admin')
+    <div class="bg-indigo-50 rounded-xl border border-indigo-200 p-6 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-semibold text-indigo-900">Household Join Key</h2>
+                <p class="text-sm text-indigo-700 mt-1">Share this key with others to let them join your household</p>
+            </div>
+            <form action="{{ route('household.regenerate-key') }}" method="POST" class="ml-4">
+                @csrf
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium">
+                    Regenerate Key
+                </button>
+            </form>
+        </div>
+
+        <div class="mt-4 bg-white rounded-lg p-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 text-indigo-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                </svg>
+                <span class="text-lg font-mono font-semibold tracking-wider text-gray-900">{{ $household->join_key }}</span>
+            </div>
+            <button type="button"
+                   onclick="navigator.clipboard.writeText('{{ $household->join_key }}').then(() => alert('Copied to clipboard!'))"
+                   class="px-3 py-1 border border-gray-300 rounded-lg text-gray-700 text-sm hover:bg-gray-50 transition-colors">
+                Copy
+            </button>
+        </div>
+
+        <p class="text-xs text-indigo-600 mt-2">Note: Regenerating the key will invalidate the previous one.</p>
+    </div>
+    @endif
+
     <!-- Household Overview Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div class="bg-white rounded-xl border border-gray-200 p-6">
@@ -208,6 +242,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                             </svg>
                             View All Tasks
+                        </a>
+
+                        <a href="{{ route('calendar.index') }}"
+                           class="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors border border-gray-200">
+                            <svg class="w-5 h-5 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            Calendar View
                         </a>
 
                         <a href="{{ route('categories.index') }}"

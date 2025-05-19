@@ -6,6 +6,7 @@ use App\Models\Household;
 use App\Models\TaskStat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class HouseholdController extends Controller
 {
@@ -22,7 +23,7 @@ class HouseholdController extends Controller
             'timezone' => 'required|string',
         ]);
 
-        // Create the household
+        // Create the household with auto-generated join key
         $household = Household::create([
             'name' => $request->name,
             'description' => $request->description,
@@ -43,27 +44,35 @@ class HouseholdController extends Controller
         ]);
 
         return redirect()->route('dashboard')
-            ->with('success', 'Household created successfully!');
+            ->with('success', 'Household created successfully! Your join key is: ' . $household->join_key);
     }
 
     public function joinForm()
     {
-        $households = Household::all();
-        return view('household.join', compact('households'));
+        return view('household.join');
     }
 
     public function join(Request $request)
     {
-        $request->validate([
-            'household_id' => 'required|exists:households,id',
+        $validator = Validator::make($request->all(), [
+            'join_key' => 'required|string|min:6|max:10',
         ]);
 
-        $user = Auth::user();
-        $household = Household::findOrFail($request->household_id);
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
 
+        // Find the household by join key
+        $household = Household::where('join_key', strtoupper($request->join_key))->first();
+
+        if (!$household) {
+            return back()->withErrors(['join_key' => 'Invalid join key. Please try again.'])->withInput();
+        }
+
+        $user = Auth::user();
         $user->update([
             'household_id' => $household->id,
-            'role' => 'member',
+            'role' => 'member',  // New members are regular members by default
         ]);
 
         // Create initial task stats
@@ -87,5 +96,23 @@ class HouseholdController extends Controller
             ->get();
 
         return view('household.show', compact('household', 'members', 'stats'));
+    }
+
+    /**
+     * Regenerate the household join key
+     */
+    public function regenerateKey()
+    {
+        $user = Auth::user();
+
+        // Only admins can regenerate keys
+        if ($user->role !== 'admin') {
+            return back()->with('error', 'Only household admins can regenerate the join key.');
+        }
+
+        $household = $user->household;
+        $household->regenerateJoinKey();
+
+        return back()->with('success', 'Join key regenerated successfully: ' . $household->join_key);
     }
 }

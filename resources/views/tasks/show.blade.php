@@ -28,6 +28,10 @@
                     <span class="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                         ✓ Completed
                     </span>
+                @elseif($task->isOverdue())
+                    <span class="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        ⚠ Overdue
+                    </span>
                 @endif
             </div>
             <div class="flex space-x-3">
@@ -93,7 +97,7 @@
                         <p class="mt-1 text-sm {{ $task->isOverdue() ? 'text-red-600 font-medium' : 'text-gray-900' }}">
                             {{ $task->due_date->format('M j, Y \a\t g:i A') }}
                             @if($task->isOverdue())
-                                <span class="text-xs">(Overdue)</span>
+                                <span class="text-xs">(Overdue by {{ $task->due_date->diffForHumans(null, true) }})</span>
                             @endif
                         </p>
                     </div>
@@ -123,6 +127,15 @@
                     <p class="text-xs text-green-700 mt-2 font-medium">
                         ✓ {{ $task->completedBy->name }} earned {{ $task->completion_points }} points for completing this task
                     </p>
+                @elseif($task->isOverdue())
+                    <p class="text-xs text-red-700 mt-2 font-medium">
+                        ⚠ This task is overdue! {{ $task->overdue_penalty_applied ? 'An overdue penalty has been applied.' : 'Overdue penalties will be applied if not completed soon.' }}
+                    </p>
+                    @if(!$task->overdue_penalty_applied)
+                        <p class="text-xs text-red-700 mt-1">
+                            Estimated penalty: -{{ $task->calculateOverduePenalty() }} points
+                        </p>
+                    @endif
                 @else
                     <p class="text-xs text-indigo-600 mt-2">Complete this task to earn {{ $task->completion_points }} points!</p>
                 @endif
@@ -136,6 +149,13 @@
                         ({{ $task->completed_at->diffForHumans() }})
                     </p>
                 </div>
+            @elseif($task->isOverdue() && $task->overdue_penalty_applied)
+                <div class="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-red-900 mb-2">Overdue Penalty Applied</h4>
+                    <p class="text-sm text-red-700">
+                        This task has incurred a point penalty for being overdue. Complete it as soon as possible to avoid further penalties.
+                    </p>
+                </div>
             @endif
 
             @if($task->is_recurring)
@@ -144,6 +164,38 @@
                     <p class="text-sm text-blue-700">This task repeats {{ $task->recurrence_pattern }}.</p>
                 </div>
             @endif
+
+            <!-- Activity Logs -->
+            <div class="mt-8 border-t border-gray-200 pt-6">
+                <h4 class="text-lg font-medium text-gray-900 mb-4">Activity History</h4>
+
+                @if($task->activityLogs->count() > 0)
+                    <div class="space-y-4">
+                        @foreach($task->activityLogs as $log)
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                                        <span class="text-sm font-medium text-indigo-600">{{ substr($log->user->name, 0, 1) }}</span>
+                                    </div>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-gray-900">
+                                        <span class="font-medium">{{ $log->user->name }}</span>
+                                        @if($log->action == 'penalty')
+                                            <span class="text-red-600">{{ $log->description }}</span>
+                                        @else
+                                            <span class="text-gray-700">{{ $log->description }}</span>
+                                        @endif
+                                    </p>
+                                    <p class="text-xs text-gray-500">{{ $log->created_at->diffForHumans() }}</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-gray-500 text-sm">No activity recorded yet.</p>
+                @endif
+            </div>
         </div>
     </div>
 

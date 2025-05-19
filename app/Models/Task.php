@@ -33,6 +33,7 @@ class Task extends Model
         'estimated_duration',
         'attachments',
         'completion_notes',
+        'overdue_penalty_applied',
     ];
 
     protected $casts = [
@@ -44,6 +45,7 @@ class Task extends Model
         'urgency_score' => 'decimal:2',
         'deleted_at' => 'datetime',
         'difficulty' => 'integer',
+        'overdue_penalty_applied' => 'boolean',
     ];
 
     protected $dates = ['deleted_at'];
@@ -111,6 +113,48 @@ class Task extends Model
         return $this->due_date && $this->due_date->isPast() && !$this->isCompleted();
     }
 
+    /**
+     * Check if the task is severely overdue (more than 1 day)
+     */
+    public function isSeverelyOverdue(): bool
+    {
+        if (!$this->due_date || $this->isCompleted()) {
+            return false;
+        }
+
+        return $this->due_date->diffInDays(now()) >= 1;
+    }
+
+    /**
+     * Calculate the overdue penalty points
+     */
+    public function calculateOverduePenalty(): int
+    {
+        if (!$this->isOverdue() || $this->overdue_penalty_applied) {
+            return 0;
+        }
+
+        // Base penalty is 10 points
+        $basePenalty = 10;
+
+        // Additional penalty based on severity and priority
+        $daysOverdue = $this->due_date->diffInDays(now());
+        $severityMultiplier = min(5, $daysOverdue); // Cap at 5 days for multiplier
+
+        $priorityMultiplier = match($this->priority) {
+            'urgent' => 2.0,
+            'high' => 1.5,
+            'medium' => 1.0,
+            'low' => 0.5,
+        };
+
+        // Calculate total penalty
+        $totalPenalty = (int)($basePenalty * $severityMultiplier * $priorityMultiplier);
+
+        // Cap penalty at 100 points
+        return min(100, $totalPenalty);
+    }
+
     public function calculateUrgencyScore(): float
     {
         if (!$this->due_date) {
@@ -163,6 +207,44 @@ class Task extends Model
     public function getCreationPointsAttribute(): int
     {
         return 100;
+    }
+
+    /**
+     * Apply the overdue penalty to the assignee's stats
+     */
+    public function applyOverduePenalty(): int
+    {
+        if (!$this->isOverdue() || $this->overdue_penalty_applied || !$this->assignee) {
+            return 0;
+        }
+
+        $penalty = $this->calculateOverduePenalty();
+
+        if ($penalty > 0) {
+            // Get or create stats for the assignee
+            $stats = TaskStat::firstOrCreate([
+                'user_id' => $this->assignee_id,
+                'household_id' => $this->household_id,
+            ]);
+
+            // Apply penalty
+            $stats->points = max(0, $stats->points - $penalty);
+            $stats->save();
+
+            // Mark penalty as applied
+            $this->overdue_penalty_applied = true;
+            $this->save();
+
+            // Log the penalty
+            TaskActivityLog::create([
+                'task_id' => $this->id,
+                'user_id' => $this->assignee_id,
+                'action' => 'penalty',
+                'description' => "Received a {$penalty} point penalty for overdue task: {$this->title}",
+            ]);
+        }
+
+        return $penalty;
     }
 
     protected function durationInHours(): Attribute

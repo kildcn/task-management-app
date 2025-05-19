@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\HouseholdController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatsController;
+use App\Http\Controllers\CalendarController;
 
 // Home route
 Route::get('/', function () {
@@ -40,6 +41,12 @@ Route::middleware(['auth', 'household.member'])->group(function () {
     Route::resource('household', HouseholdController::class)->only(['show', 'edit', 'update']);
     Route::get('household/members', [HouseholdController::class, 'members'])->name('household.members');
     Route::get('household/invite', [HouseholdController::class, 'invite'])->name('household.invite');
+    Route::post('household/regenerate-key', [HouseholdController::class, 'regenerateKey'])->name('household.regenerate-key');
+
+    // Calendar
+    Route::get('calendar', [CalendarController::class, 'index'])->name('calendar.index');
+    Route::get('calendar/month/{year}/{month}', [CalendarController::class, 'getMonthData'])->name('calendar.month');
+    Route::get('calendar/day/{date}', [CalendarController::class, 'getDayDetails'])->name('calendar.day');
 
     // Stats
     Route::get('stats', [StatsController::class, 'index'])->name('stats.index');

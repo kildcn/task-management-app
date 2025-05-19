@@ -21,6 +21,9 @@ class TaskController extends Controller
         $user = Auth::user();
         $household = $user->household;
 
+        // Check for overdue tasks and apply penalties if needed
+        $this->checkOverdueTasks($user);
+
         $tasks = Task::where('household_id', $household->id)
             ->with(['assignee', 'creator', 'category', 'completedBy'])
             ->orderBy('completed_at', 'asc')
@@ -52,7 +55,10 @@ class TaskController extends Controller
             ->where('is_active', true)
             ->get();
 
-        return view('tasks.create', compact('categories', 'members'));
+        // Get default due date from request query param
+        $defaultDueDate = request('due_date');
+
+        return view('tasks.create', compact('categories', 'members', 'defaultDueDate'));
     }
 
     /**
@@ -88,6 +94,7 @@ class TaskController extends Controller
             'estimated_duration' => $validated['estimated_duration'],
             'is_recurring' => $validated['is_recurring'] ?? false,
             'recurrence_pattern' => $validated['recurrence_pattern'] ?? null,
+            'overdue_penalty_applied' => false,
         ]);
 
         // Log the activity
@@ -172,6 +179,11 @@ class TaskController extends Controller
         // Handle the case where recurrence_pattern might not be in the request
         $updateData = $validated;
         $updateData['recurrence_pattern'] = $validated['recurrence_pattern'] ?? null;
+
+        // Reset overdue_penalty_applied if due date changes
+        if (isset($changes['due_date'])) {
+            $updateData['overdue_penalty_applied'] = false;
+        }
 
         $task->update($updateData);
 
@@ -289,6 +301,40 @@ class TaskController extends Controller
         );
 
         return back()->with('success', 'Reaction added!');
+    }
+
+    /**
+     * Check for overdue tasks and apply penalties
+     */
+    private function checkOverdueTasks(User $user)
+    {
+        // Find user's overdue tasks that need penalties
+        $overdueTasks = Task::where('assignee_id', $user->id)
+            ->whereNotNull('due_date')
+            ->where('due_date', '<', now())
+            ->whereNull('completed_at')
+            ->where(function($query) {
+                $query->where('overdue_penalty_applied', false)
+                      ->orWhereNull('overdue_penalty_applied');
+            })
+            ->where('household_id', $user->household_id)
+            ->get();
+
+        $totalPenalty = 0;
+        $messages = [];
+
+        foreach ($overdueTasks as $task) {
+            $penalty = $task->applyOverduePenalty();
+            if ($penalty > 0) {
+                $totalPenalty += $penalty;
+                $messages[] = "Task \"{$task->title}\" is overdue: -{$penalty} points";
+            }
+        }
+
+        if ($totalPenalty > 0) {
+            $messageText = "You've received a penalty of {$totalPenalty} points for overdue tasks!\n" . implode("\n", $messages);
+            session()->flash('error', $messageText);
+        }
     }
 
     /**
