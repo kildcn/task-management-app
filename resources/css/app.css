@@ -1,60 +1,32 @@
+/* Base styles */
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-/* Custom glass card effect */
+/*
+ * ==============================
+ * COMPONENT STYLES
+ * ==============================
+ */
+
+/* ===== Layout Components ===== */
 @layer components {
+    /* Glass card effect */
     .glass-card {
-        @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-lg;
+        @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-lg
+               transition-all duration-300 hover:shadow-xl;
     }
 
-    /* Fixed button styles with proper visibility */
-    .btn-primary {
-        @apply inline-flex items-center px-6 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
-        background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
-        color: white !important;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .btn-primary:hover {
-        background: linear-gradient(to right, #4338CA, #6D28D9) !important;
-        color: white !important;
-    }
-
-    .btn-primary:focus {
-        @apply focus:ring-4 focus:ring-indigo-200;
-        background: linear-gradient(to right, #4338CA, #6D28D9) !important;
-        color: white !important;
-    }
-
-    .btn-primary svg {
-        color: white !important;
-    }
-
-    .btn-secondary {
-        @apply inline-flex items-center px-6 py-2.5 bg-white text-gray-700 text-sm font-semibold rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300 focus:ring-4 focus:ring-gray-200 transition-all duration-200 shadow hover:shadow-lg;
-        color: #374151 !important;
-    }
-
-    .btn-ghost {
-        @apply inline-flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-50/50 transition-all duration-200;
-        color: #4B5563 !important;
-    }
-
-    .nav-link {
-        @apply flex items-center px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all duration-200;
-    }
-
-    .nav-link.active {
-        @apply text-indigo-600 bg-indigo-50/50 shadow-sm;
-    }
-
+    /* Stats & info cards */
     .stats-card {
-        @apply glass-card p-6 rounded-xl hover:scale-[1.02] transition-all duration-300 border border-white/30;
+        @apply glass-card p-6 rounded-xl hover:scale-[1.02] transition-all duration-300
+               border border-white/30;
     }
 
+    /* Task items */
     .task-item {
-        @apply glass-card p-6 rounded-xl hover:shadow-xl hover:scale-[1.01] transition-all duration-200 border-l-4;
+        @apply glass-card p-6 rounded-xl hover:shadow-xl hover:scale-[1.01]
+               transition-all duration-200 border-l-4;
     }
 
     .task-item.completed {
@@ -65,14 +37,60 @@
         @apply border-l-red-500 bg-red-50/20;
     }
 
+    /* Navigation Elements */
+    .nav-link {
+        @apply flex items-center px-3 py-2 rounded-lg text-sm font-medium text-gray-600
+               hover:text-indigo-600 hover:bg-indigo-50/50 transition-all duration-200;
+    }
+
+    .nav-link.active {
+        @apply text-indigo-600 bg-indigo-50/50 shadow-sm;
+    }
+
+    /* Button Styles */
+    .btn-primary {
+        @apply inline-flex items-center px-6 py-2.5 text-sm font-semibold rounded-lg
+               transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5
+               bg-gradient-to-r from-indigo-500 to-purple-600 text-white
+               hover:from-indigo-600 hover:to-purple-700 focus:ring-4 focus:ring-indigo-200;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center px-6 py-2.5 bg-white text-gray-700 text-sm font-semibold
+               rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-gray-300
+               focus:ring-4 focus:ring-gray-200 transition-all duration-200 shadow hover:shadow-lg;
+    }
+
+    .btn-ghost {
+        @apply inline-flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 text-sm
+               font-medium rounded-lg hover:bg-gray-50/50 transition-all duration-200;
+    }
+
+    /* Form Elements */
     .form-input {
-        @apply block w-full rounded-lg border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-200;
+        @apply block w-full rounded-lg border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm
+               focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-200;
     }
 
     .form-label {
         @apply block text-sm font-semibold text-gray-700 mb-2;
     }
 
+    .form-group {
+        @apply space-y-4;
+    }
+
+    /* Progress & Stats Components */
+    .progress-bar {
+        @apply w-full bg-gray-200 rounded-full h-2 overflow-hidden;
+    }
+
+    .progress-fill {
+        @apply h-full bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full
+               transition-all duration-500;
+    }
+
+    /* Badges & Tags */
     .priority-badge {
         @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold;
     }
@@ -93,62 +111,12 @@
         @apply bg-green-100 text-green-800 border border-green-200;
     }
 
-    /* Fixed Calendar Styles - Proper Grid */
-    .calendar-container {
-        @apply bg-white/80 backdrop-blur-lg rounded-xl shadow-lg border border-white/30;
-        max-width: 100%;
-        overflow: hidden;
+    /* Category badges */
+    .category-badge {
+        @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm;
     }
 
-    .calendar-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 8px;
-        padding: 16px;
-        width: 100%;
-        max-width: 700px;
-        margin: 0 auto;
-    }
-
-    .calendar-day {
-        @apply bg-white/60 backdrop-blur-sm rounded-lg cursor-pointer border border-white/40 hover:border-indigo-300 hover:shadow-lg transition-all duration-200;
-        height: 80px;
-        width: 100%;
-        max-width: 90px;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        padding: 8px;
-        justify-self: center;
-        aspect-ratio: 1;
-    }
-
-    .calendar-day.today {
-        @apply border-indigo-400 bg-indigo-50/70 shadow-lg;
-    }
-
-    .calendar-day.has-tasks {
-        @apply border-purple-300 bg-purple-50/50;
-    }
-
-    .task-indicator {
-        @apply h-1 rounded-full transition-all duration-200;
-        width: 100%;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .priority-line {
-        @apply w-1 h-12 rounded-full mr-4;
-    }
-
-    .progress-bar {
-        @apply w-full bg-gray-200 rounded-full h-2 overflow-hidden;
-    }
-
-    .progress-fill {
-        @apply h-full bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full transition-all duration-500;
-    }
-
+    /* Status Indicators */
     .status-indicator {
         @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
     }
@@ -164,34 +132,181 @@
     .status-indicator.overdue {
         @apply bg-red-100 text-red-800;
     }
+}
 
-    /* Form group spacing */
-    .form-group {
-        @apply space-y-4;
+/*
+ * ==============================
+ * CALENDAR STYLES (FIXED)
+ * ==============================
+ */
+@layer components {
+    /* Main Calendar Container */
+    .calendar-container {
+        @apply bg-white/80 backdrop-blur-lg rounded-xl shadow-lg border border-white/30;
+        max-width: 100%;
+        overflow: hidden;
     }
 
-    /* Category badges */
-    .category-badge {
-        @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm;
+    /* Calendar Grid Structure */
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+        padding: 16px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    /* Calendar Day Cell */
+    .calendar-day {
+        @apply bg-white/60 backdrop-blur-sm rounded-lg cursor-pointer border border-white/40
+               hover:border-indigo-300 hover:shadow-lg transition-all duration-200;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding: 8px;
+        justify-self: center;
+        min-height: 80px;
+        aspect-ratio: 1;
+    }
+
+    /* Today Highlight */
+    .calendar-day.today {
+        @apply border-indigo-400 bg-indigo-50/70 shadow-lg;
+    }
+
+    .calendar-day.today::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, #4f46e5, #7c3aed);
+        border-radius: 12px;
+        z-index: -1;
+        opacity: 0.1;
+    }
+
+    /* Days with Tasks */
+    .calendar-day.has-tasks {
+        @apply border-purple-300 bg-purple-50/50;
+    }
+
+    /* Task Indicators within Calendar */
+    .task-indicator {
+        @apply h-1 rounded-full transition-all duration-200;
+        width: 100%;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 4px;
+    }
+
+    /* Enhanced Hover Effects */
+    .calendar-day:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .calendar-day:hover .task-indicator {
+        @apply scale-105;
+    }
+
+    /* Day Header Styles */
+    .day-header {
+        text-align: center;
+        font-weight: 600;
+        color: #4F46E5;
+        padding: 8px 0;
+    }
+
+    /* Calendar Week */
+    .calendar-week {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+    }
+
+    /* Calendar Week Row Title */
+    .week-title {
+        @apply text-sm font-medium text-gray-600 py-2;
+    }
+
+    /* Day Number */
+    .day-number {
+        @apply text-sm font-medium text-gray-700 mb-1;
+    }
+
+    /* Task Calendar Modal */
+    .task-modal {
+        @apply fixed inset-0 bg-gray-500/50 z-50 flex justify-center items-center;
+    }
+
+    .task-modal-content {
+        @apply bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[80vh] overflow-auto;
     }
 }
 
-/* Custom animations */
-@layer utilities {
-    .fade-in {
-        animation: fadeIn 0.5s ease-in-out;
-    }
-
-    .slide-up {
-        animation: slideUp 0.5s ease-out;
-    }
-
-    .hover-lift {
-        @apply transition-all duration-200 hover:-translate-y-1 hover:shadow-lg;
-    }
+/*
+ * ==============================
+ * PRIORITY COLORS
+ * ==============================
+ */
+.priority-urgent {
+    @apply bg-gradient-to-r from-red-500 to-pink-500;
 }
 
-/* Keyframe animations */
+.priority-high {
+    @apply bg-gradient-to-r from-orange-500 to-red-500;
+}
+
+.priority-medium {
+    @apply bg-gradient-to-r from-yellow-500 to-orange-500;
+}
+
+.priority-low {
+    @apply bg-gradient-to-r from-green-500 to-blue-500;
+}
+
+/*
+ * ==============================
+ * UTILITY CLASSES & ANIMATIONS
+ * ==============================
+ */
+/* Line clamp utility for text truncation */
+.line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+/* Truncate text overflow */
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.slide-up {
+    animation: slideUp 0.5s ease-out;
+}
+
+.hover-lift {
+    @apply transition-all duration-200 hover:-translate-y-1 hover:shadow-lg;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -225,70 +340,11 @@
     }
 }
 
-/* Priority colors */
-.priority-urgent {
-    @apply bg-gradient-to-r from-red-500 to-pink-500;
-}
-
-.priority-high {
-    @apply bg-gradient-to-r from-orange-500 to-red-500;
-}
-
-.priority-medium {
-    @apply bg-gradient-to-r from-yellow-500 to-orange-500;
-}
-
-.priority-low {
-    @apply bg-gradient-to-r from-green-500 to-blue-500;
-}
-
-/* Enhanced calendar hover effects */
-.calendar-day:hover {
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-.calendar-day:hover .task-indicator {
-    @apply scale-105;
-}
-
-/* Today indicator enhancement */
-.calendar-day.today::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, #4f46e5, #7c3aed);
-    border-radius: 12px;
-    z-index: -1;
-    opacity: 0.1;
-}
-
-/* Focus states for accessibility */
-.calendar-day:focus {
-    @apply outline-none ring-2 ring-indigo-500 ring-offset-2;
-}
-
-.calendar-day:focus-visible {
-    @apply outline-none ring-2 ring-indigo-500 ring-offset-2;
-}
-
-/* Custom scrollbar for calendar container */
-.calendar-container::-webkit-scrollbar {
-    height: 8px;
-}
-
-.calendar-container::-webkit-scrollbar-track {
-    @apply bg-gray-100 rounded-full;
-}
-
-.calendar-container::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full hover:bg-gray-400;
-}
-
-/* Mobile responsive adjustments */
+/*
+ * ==============================
+ * RESPONSIVE ADJUSTMENTS
+ * ==============================
+ */
 @media (max-width: 768px) {
     .nav-link span {
         @apply hidden;
@@ -304,6 +360,7 @@
         height: 60px;
         max-width: 45px;
         padding: 4px;
+        min-height: 60px;
     }
 
     .task-item {
@@ -321,6 +378,10 @@
     .calendar-day .task-indicator {
         height: 1px;
     }
+
+    .day-number {
+        font-size: 0.75rem;
+    }
 }
 
 /* Tablet adjustments */
@@ -331,6 +392,7 @@
 
     .calendar-day {
         height: 70px;
+        min-height: 70px;
         max-width: 65px;
     }
 }
@@ -343,24 +405,13 @@
 
     .calendar-day {
         height: 80px;
+        min-height: 80px;
         max-width: 90px;
     }
 }
 
-/* Responsive calendar improvements */
-.calendar-container .calendar-grid {
-    min-width: 320px;
-}
-
-/* Smooth transitions for interactive elements */
-.calendar-day,
-.stats-card,
-.task-item {
-    will-change: transform;
-}
-
-/* CRITICAL BUTTON FIXES - Applied with highest priority */
-/* These styles ensure all primary buttons are always visible */
+/* IMPORTANT: These button styles ensure all primary buttons are always visible properly */
+/* This is a critical fix for visibility problems in the current design */
 .btn-primary,
 button[type="submit"],
 a[class*="btn-primary"],
@@ -401,69 +452,4 @@ button[type="submit"] svg,
 a[class*="btn-primary"] svg {
     color: white !important;
     stroke: white !important;
-}
-
-/* Fix buttons in specific contexts */
-.glass-card .btn-primary,
-.bg-white .btn-primary,
-form .btn-primary,
-nav .btn-primary {
-    background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
-    color: white !important;
-}
-
-/* Navigation specific button fixes */
-nav a[href*="register"],
-nav a[href*="create"],
-.navbar .btn-primary {
-    background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
-    color: white !important;
-}
-
-/* Form submit buttons */
-form button[type="submit"],
-.form-actions button[type="submit"] {
-    background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
-    color: white !important;
-    border: none !important;
-}
-
-/* Welcome page specific fixes */
-.welcome .btn-primary,
-#app .btn-primary {
-    background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
-    color: white !important;
-}
-
-/* Auth pages button fixes */
-.auth-page .btn-primary,
-.login-form .btn-primary,
-.register-form .btn-primary {
-    background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
-    color: white !important;
-}
-
-/* Additional safety net for any missed buttons */
-button:contains("Create"),
-button:contains("Submit"),
-button:contains("Save"),
-a:contains("Get Started"),
-a:contains("Register") {
-    background: linear-gradient(to right, #4F46E5, #7C3AED) !important;
-    color: white !important;
-}
-
-/* Line clamp utility for text truncation */
-.line-clamp-1 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
-}
-
-/* Ensure long URLs or text don't break layout */
-.truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }

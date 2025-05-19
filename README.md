@@ -1,4 +1,4 @@
-# TaskFlow - Household Task Management System
+# Tasc - Household Task Management System
 
 A modern, full-stack web application for managing household tasks, built with Laravel and designed for collaborative family management.
 
@@ -8,7 +8,7 @@ A modern, full-stack web application for managing household tasks, built with La
 
 ## 📋 Project Overview
 
-TaskFlow is a comprehensive household task management system that demonstrates proficiency in modern web development practices, backend architecture, and database design. The application features a sophisticated points-based gamification system, real-time analytics, and a responsive, user-friendly interface.
+Tasc is a comprehensive household task management system that demonstrates proficiency in modern web development practices, backend architecture, and database design. The application features a sophisticated points-based gamification system, real-time analytics, and a responsive, user-friendly interface.
 
 ### Key Features Implemented
 
@@ -117,8 +117,8 @@ public function updateStats()
 ### Quick Start
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/taskflow.git
-cd taskflow
+git clone https://github.com/yourusername/Tasc.git
+cd Tasc
 
 # Install dependencies
 composer install

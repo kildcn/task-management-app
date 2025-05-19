@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'TaskFlow') }}</title>
+    <title>{{ config('app.name', 'Tasc') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen">
@@ -20,7 +20,7 @@
                                 </svg>
                             </div>
                             <span class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                                TaskFlow
+                                Tasc
                             </span>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
             <div class="max-w-4xl mx-auto text-center">
                 <div class="glass-card p-8 lg:p-12 rounded-2xl shadow-xl">
                     <h1 class="text-4xl lg:text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6">
-                        Welcome to TaskFlow
+                        Welcome to Tasc
                     </h1>
                     <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
                         The smart way to manage household tasks. Collaborate with your family, track progress, and celebrate achievements together.
@@ -111,7 +111,7 @@
         <!-- Footer -->
         <footer class="bg-white/50 backdrop-blur-sm py-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600">
-                <p>&copy; {{ date('Y') }} TaskFlow. Built with Laravel.</p>
+                <p>&copy; {{ date('Y') }} Tasc. Built with Laravel.</p>
             </div>
         </footer>
     </div>

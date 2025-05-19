@@ -1,90 +1,5 @@
 @extends('layouts.app')
 
-@section('head')
-<style>
-    .calendar-day {
-        aspect-ratio: 1;
-        height: auto;
-        min-height: 100px;
-        transition: all 0.2s ease;
-    }
-
-    .calendar-day:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-
-    .calendar-day.other-month {
-        opacity: 0.4;
-    }
-
-    .calendar-day.today {
-        background-color: rgba(79, 70, 229, 0.1);
-        border-color: rgba(79, 70, 229, 0.5);
-    }
-
-    .task-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        margin-right: 3px;
-    }
-
-    .calendar-week {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 4px;
-    }
-
-    .day-header {
-        text-align: center;
-        font-weight: 600;
-        color: #4F46E5;
-        padding: 8px 0;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .calendar-day {
-            min-height: 60px;
-        }
-
-        .day-number {
-            font-size: 0.875rem;
-        }
-
-        .task-dot {
-            width: 6px;
-            height: 6px;
-        }
-    }
-
-    /* Task Modal */
-    .task-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 50;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .task-modal-content {
-        background-color: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        width: 90%;
-        max-width: 500px;
-        max-height: 80vh;
-        overflow-y: auto;
-    }
-</style>
-@endsection
-
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header -->
@@ -119,7 +34,7 @@
     </div>
 
     <!-- Calendar -->
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="calendar-container">
         <!-- Calendar Header - Days of the week -->
         <div class="calendar-week border-b border-gray-200 bg-gray-50">
             @foreach(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
@@ -162,11 +77,11 @@
                     }
                 @endphp
 
-                <div class="calendar-day p-2 border rounded-lg {{ $isCurrentMonth ? 'bg-white/60' : 'bg-gray-50 other-month' }} {{ $isToday ? 'today' : '' }}"
+                <div class="calendar-day {{ !$isCurrentMonth ? 'opacity-40' : '' }} {{ $isToday ? 'today' : '' }} {{ $hasTasks ? 'has-tasks' : '' }}"
                      data-date="{{ $dateKey }}" onclick="showDayTasks('{{ $dateKey }}')">
                     <!-- Day number -->
-                    <div class="day-number flex justify-between items-center mb-1">
-                        <span class="text-sm font-medium {{ $isToday ? 'text-indigo-700' : 'text-gray-700' }}">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="day-number {{ $isToday ? 'text-indigo-700 font-semibold' : 'text-gray-700' }}">
                             {{ $calendarStart->format('j') }}
                         </span>
                         @if($isToday)
@@ -176,19 +91,16 @@
 
                     <!-- Task indicators -->
                     @if($hasTasks)
-                        <div class="task-list">
+                        <div class="mt-1 space-y-1">
                             @foreach(array_slice($dayTasks, 0, 3) as $task)
-                                <div class="flex items-center mb-1 text-xs">
-                                    <div class="task-dot" style="background-color: {{ $task->category->color }}"></div>
-                                    <span class="truncate {{ $task->isCompleted() ? 'line-through text-gray-400' : '' }}">
-                                        {{ Str::limit($task->title, 18) }}
-                                    </span>
+                                <div class="task-indicator"
+                                     style="background-color: {{ $task->category->color }}">
                                 </div>
                             @endforeach
 
                             @if(count($dayTasks) > 3)
-                                <div class="text-xs text-gray-500 pl-3">
-                                    +{{ count($dayTasks) - 3 }} more
+                                <div class="text-xs text-center text-gray-500 mt-1">
+                                    +{{ count($dayTasks) - 3 }}
                                 </div>
                             @endif
                         </div>
@@ -251,7 +163,7 @@
             @endif
 
             <div class="mt-6">
-                <a href="{{ route('tasks.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium">
+                <a href="{{ route('tasks.create') }}" class="btn-primary">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
@@ -263,7 +175,7 @@
 </div>
 
 <!-- Task Modal for Day View -->
-<div id="taskModal" class="task-modal">
+<div id="taskModal" class="task-modal" style="display: none;">
     <div class="task-modal-content p-6">
         <div class="flex justify-between items-center mb-4">
             <h3 id="modalDate" class="text-xl font-semibold text-gray-900">Tasks for June 15, 2025</h3>
@@ -283,11 +195,11 @@
         </div>
 
         <div class="mt-6 flex justify-between">
-            <button onclick="closeModal()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+            <button onclick="closeModal()" class="btn-secondary">
                 Close
             </button>
 
-            <a href="#" id="createTaskForDate" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm">
+            <a href="#" id="createTaskForDate" class="btn-primary">
                 Add Task
             </a>
         </div>
