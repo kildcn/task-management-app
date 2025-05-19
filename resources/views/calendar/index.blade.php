@@ -56,15 +56,13 @@
                 $today = Carbon\Carbon::today();
             @endphp
 
-            @while ($calendarStart <= $calendarEnd)
-                @if($calendarStart->dayOfWeek === 0)
-                    <div class="calendar-week mb-4">
-                @endif
-
+            <!-- Start with the first week row -->
+            <div class="calendar-week mb-4">
+            @for ($day = $calendarStart; $day <= $calendarEnd; $day->addDay())
                 @php
-                    $isCurrentMonth = $calendarStart->month === $date->month;
-                    $isToday = $calendarStart->isSameDay($today);
-                    $dateKey = $calendarStart->format('Y-m-d');
+                    $isCurrentMonth = $day->month === $date->month;
+                    $isToday = $day->isSameDay($today);
+                    $dateKey = $day->format('Y-m-d');
                     $hasTasks = isset($tasksByDate[$dateKey]);
                     $dayTasks = $hasTasks ? $tasksByDate[$dateKey] : [];
 
@@ -82,7 +80,7 @@
                     <!-- Day number -->
                     <div class="flex justify-between items-center mb-1">
                         <span class="day-number {{ $isToday ? 'text-indigo-700 font-semibold' : 'text-gray-700' }}">
-                            {{ $calendarStart->format('j') }}
+                            {{ $day->format('j') }}
                         </span>
                         @if($isToday)
                             <span class="text-xs bg-indigo-500 text-white px-1.5 py-0.5 rounded-full">Today</span>
@@ -107,12 +105,12 @@
                     @endif
                 </div>
 
-                @php $calendarStart->addDay(); @endphp
-
-                @if($calendarStart->dayOfWeek === 0)
-                    </div>
+                <!-- End the current week row and start a new one if we're at the end of a week -->
+                @if($day->dayOfWeek === 6 && $day->lt($calendarEnd))
+                    </div><div class="calendar-week mb-4">
                 @endif
-            @endwhile
+            @endfor
+            </div>
         </div>
     </div>
 

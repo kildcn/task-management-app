@@ -115,4 +115,104 @@ class HouseholdController extends Controller
 
         return back()->with('success', 'Join key regenerated successfully: ' . $household->join_key);
     }
+
+    /**
+ * Show confirmation form for leaving household
+ */
+public function leaveConfirm()
+{
+    return view('household.leave');
+}
+
+/**
+ * Process the user leaving a household
+ */
+public function leave(Request $request)
+{
+    $user = Auth::user();
+
+    // Prevent the last admin from leaving
+    if ($user->role === 'admin' && $user->household->users()->where('role', 'admin')->count() <= 1) {
+        return back()->with('error', 'You are the only admin. Please promote another member to admin before leaving.');
+    }
+
+    // Clear the user's household association
+    $user->update([
+        'household_id' => null,
+        'role' => null,
+    ]);
+
+    // Delete their task stats
+    TaskStat::where('user_id', $user->id)->delete();
+
+    return redirect()->route('household.create')
+        ->with('success', 'You have left the household successfully.');
+}
+
+/**
+ * Display household members management page
+ */
+public function members()
+{
+    $user = Auth::user();
+
+    if ($user->role !== 'admin') {
+        return redirect()->route('household.show')
+            ->with('error', 'Only admins can manage household members.');
+    }
+
+    $household = $user->household;
+    $members = $household->users;
+
+    return view('household.members', compact('household', 'members'));
+}
+
+/**
+ * Remove a member from the household (admin only)
+ */
+public function removeMember(Request $request, User $member)
+{
+    $user = Auth::user();
+
+    // Check if user is admin and the member belongs to their household
+    if ($user->role !== 'admin' || $member->household_id !== $user->household_id) {
+        return back()->with('error', 'You do not have permission to remove this member.');
+    }
+
+    // Prevent removing yourself
+    if ($member->id === $user->id) {
+        return back()->with('error', 'You cannot remove yourself. Use the leave household option instead.');
+    }
+
+    // Clear the member's household association
+    $member->update([
+        'household_id' => null,
+        'role' => null,
+    ]);
+
+    // Delete their task stats
+    TaskStat::where('user_id', $member->id)->delete();
+
+    return back()->with('success', "{$member->name} has been removed from the household.");
+}
+
+/**
+ * Toggle admin role for a member (admin only)
+ */
+public function toggleAdminRole(Request $request, User $member)
+{
+    $user = Auth::user();
+
+    // Check if user is admin and the member belongs to their household
+    if ($user->role !== 'admin' || $member->household_id !== $user->household_id) {
+        return back()->with('error', 'You do not have permission to manage this member.');
+    }
+
+    // Toggle the role
+    $newRole = $member->role === 'admin' ? 'member' : 'admin';
+    $member->update(['role' => $newRole]);
+
+    $action = $newRole === 'admin' ? 'promoted to admin' : 'changed to regular member';
+    return back()->with('success', "{$member->name} has been {$action}.");
+}
 }
