@@ -21,7 +21,9 @@ class EnsureHouseholdMember
                 'household.create',
                 'household.store',
                 'household.join',
-                'household.join.post'
+                'household.join.post',
+                'household.leave',      // Add exemption for leave confirmation page
+                'household.leave.post'  // Add exemption for leave post action
             ])) {
                 return redirect()->route('household.create')
                     ->with('error', 'You must join a household first.');

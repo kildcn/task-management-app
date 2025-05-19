@@ -38,15 +38,14 @@ Route::middleware(['auth', 'household.member'])->group(function () {
     Route::patch('categories/reorder', [CategoryController::class, 'reorder'])->name('categories.reorder');
 
     // Household management
-    Route::resource('household', HouseholdController::class)->only(['show', 'edit', 'update']);
-    Route::get('household/members', [HouseholdController::class, 'members'])->name('household.members');
+    Route::get('household', [HouseholdController::class, 'show'])->name('household.show'); // Changed from resource to explicit
+    Route::get('household/manage-members', [HouseholdController::class, 'members'])->name('household.members'); // Changed URL path
+    Route::delete('household/members/{member}', [HouseholdController::class, 'removeMember'])->name('household.members.remove');
+    Route::patch('household/members/{member}/role', [HouseholdController::class, 'toggleAdminRole'])->name('household.members.toggle-role');
     Route::get('household/invite', [HouseholdController::class, 'invite'])->name('household.invite');
     Route::post('household/regenerate-key', [HouseholdController::class, 'regenerateKey'])->name('household.regenerate-key');
     Route::get('household/leave', [HouseholdController::class, 'leaveConfirm'])->name('household.leave');
     Route::post('household/leave', [HouseholdController::class, 'leave'])->name('household.leave.post');
-    Route::get('household/members', [HouseholdController::class, 'members'])->name('household.members');
-Route::delete('household/members/{member}', [HouseholdController::class, 'removeMember'])->name('household.members.remove');
-Route::patch('household/members/{member}/role', [HouseholdController::class, 'toggleAdminRole'])->name('household.members.toggle-role');
 
     // Calendar
     Route::get('calendar', [CalendarController::class, 'index'])->name('calendar.index');

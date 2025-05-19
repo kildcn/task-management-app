@@ -453,3 +453,94 @@ a[class*="btn-primary"] svg {
     color: white !important;
     stroke: white !important;
 }
+
+/*
+ * ==============================
+ * RESPONSIVE UTILITIES
+ * ==============================
+ */
+
+/* Mobile-first navigation */
+@media (max-width: 640px) {
+    .nav-link {
+        @apply justify-center;
+    }
+
+    .nav-link span {
+        @apply hidden;
+    }
+
+    /* Modal sizes for mobile */
+    .modal-content {
+        @apply w-full mx-3 max-h-[90vh];
+    }
+
+    /* Better padding for cards on mobile */
+    .glass-card, .stats-card, .task-item {
+        @apply p-4;
+    }
+
+    /* Adjust grid layouts for mobile */
+    .grid-cols-2, .grid-cols-3, .grid-cols-4 {
+        @apply grid-cols-1;
+    }
+
+    /* Fix for tables on mobile */
+    table {
+        @apply block overflow-x-auto;
+    }
+}
+
+/* Better responsive text handling */
+.responsive-text-sm {
+    @apply text-xs sm:text-sm;
+}
+
+.responsive-text-base {
+    @apply text-sm sm:text-base;
+}
+
+.responsive-text-lg {
+    @apply text-base sm:text-lg;
+}
+
+.responsive-text-xl {
+    @apply text-lg sm:text-xl;
+}
+
+.responsive-text-2xl {
+    @apply text-xl sm:text-2xl;
+}
+
+/* Fix for long unbroken text */
+.break-words {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+/* Prevent overflow on containers */
+.overflow-container {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+/* For flexbox layouts that need to stack on mobile */
+.flex-responsive {
+    @apply flex flex-col sm:flex-row;
+}
+
+/* For buttons that need to be full width on mobile */
+.btn-responsive {
+    @apply w-full sm:w-auto;
+}
+
+/* Hide elements on small screens */
+.hide-on-mobile {
+    @apply hidden sm:block;
+}
+
+/* Hide elements on larger screens */
+.hide-on-desktop {
+    @apply block sm:hidden;
+}
