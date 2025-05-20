@@ -5,10 +5,6 @@
     <!-- Header -->
     <div class="mb-8">
         <div class="flex justify-between items-center">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900">Calendar</h1>
-                <p class="text-gray-600 mt-1">View and manage your household tasks by date</p>
-            </div>
             <div class="flex space-x-4">
                 <a href="{{ route('calendar.index', ['date' => $prevMonth->format('Y-m-d')]) }}"
                    class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
